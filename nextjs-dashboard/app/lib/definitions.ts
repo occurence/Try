@@ -9,9 +9,9 @@ export type UserDetails = {
   email: string;
   password: string;
   image_url: string;
-  admin: number;
-  manager: number;
-  employee: number;
+  admin: string;
+  manager: string;
+  employee: string;
 };
 
 export type User = {

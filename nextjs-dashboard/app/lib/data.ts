@@ -7,15 +7,29 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
-  UserInfo,
   UserDetails,
 } from './definitions';
 import { formatCurrency } from './utils';
 
 export async function fetchUserInfo() {
   try {
-    const data = await sql<UserDetails>`SELECT U.ID AS USER_ID, EMPLOYEE_ID, CONCAT(LAST_NAME, ', ', FIRST_NAME) AS NAME, EMAIL, IMAGE_URL,
-    COALESCE(A.ID, 0) AS ADMIN, COALESCE(M.ID, 0) AS MANAGER, COALESCE(E.ID, 0) AS EMPLOYEE
+    const data = await sql<UserDetails>`SELECT U.ID AS USER_ID, EMPLOYEE_ID, CONCAT(FIRST_NAME, ', ', LAST_NAME) AS NAME, EMAIL, IMAGE_URL,
+
+
+    CASE
+        WHEN COALESCE(A.ID, 0) = 0
+            THEN ''
+        ELSE 'Admin' END AS ADMIN,
+    
+    CASE
+        WHEN COALESCE(M.ID, 0) = 0
+            THEN ''
+        ELSE 'Manager' END AS MANAGER,
+    
+    CASE
+        WHEN COALESCE(E.ID, 0) = 0
+            THEN ''
+        ELSE 'Employee' END AS EMPLOYEE
     
     
     FROM USER_INFO U LEFT OUTER JOIN ADMIN A
@@ -25,7 +39,7 @@ export async function fetchUserInfo() {
     LEFT OUTER JOIN EMPLOYEE E
     ON U.ID = E.USER_ID
     
-    WHERE U.ID = 1
+    WHERE U.ID=1
     ORDER BY U.ID`;
 
     // console.log('Data fetch completed after 3 seconds.');
@@ -39,8 +53,23 @@ export async function fetchUserInfo() {
 
 export async function fetchUserDetails() {
   try {
-    const data = await sql<UserDetails>`SELECT U.ID AS USER_ID, EMPLOYEE_ID, CONCAT(LAST_NAME, ', ', FIRST_NAME) AS NAME, EMAIL, IMAGE_URL,
-    COALESCE(A.ID, 0) AS ADMIN, COALESCE(M.ID, 0) AS MANAGER, COALESCE(E.ID, 0) AS EMPLOYEE
+    const data = await sql<UserDetails>`SELECT U.ID AS USER_ID, EMPLOYEE_ID, CONCAT(FIRST_NAME, ', ', LAST_NAME) AS NAME, EMAIL, IMAGE_URL,
+
+
+    CASE
+        WHEN COALESCE(A.ID, 0) = 0
+            THEN ''
+        ELSE 'Admin' END AS ADMIN,
+    
+    CASE
+        WHEN COALESCE(M.ID, 0) = 0
+            THEN ''
+        ELSE 'Manager' END AS MANAGER,
+    
+    CASE
+        WHEN COALESCE(E.ID, 0) = 0
+            THEN ''
+        ELSE 'Employee' END AS EMPLOYEE
     
     
     FROM USER_INFO U LEFT OUTER JOIN ADMIN A
@@ -49,6 +78,7 @@ export async function fetchUserDetails() {
     ON U.ID = M.USER_ID
     LEFT OUTER JOIN EMPLOYEE E
     ON U.ID = E.USER_ID
+    
     
     ORDER BY U.ID`;
 
