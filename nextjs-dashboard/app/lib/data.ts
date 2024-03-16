@@ -7,8 +7,33 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
+  UserDetails,
 } from './definitions';
 import { formatCurrency } from './utils';
+
+export async function fetchUserDetails() {
+  try {
+    const data = await sql<UserDetails>`SELECT U.ID AS USER_ID, EMPLOYEE_ID, CONCAT(LAST_NAME, ', ', FIRST_NAME) AS NAME, EMAIL, IMAGE_URL,
+    COALESCE(A.ID, 0) AS ADMIN, COALESCE(M.ID, 0) AS MANAGER, COALESCE(E.ID, 0) AS EMPLOYEE
+    
+    
+    FROM USER_INFO U LEFT OUTER JOIN ADMIN A
+    ON U.ID = A.USER_ID
+    LEFT OUTER JOIN MANAGER M
+    ON U.ID = M.USER_ID
+    LEFT OUTER JOIN EMPLOYEE E
+    ON U.ID = E.USER_ID
+    
+    ORDER BY U.ID`;
+
+    // console.log('Data fetch completed after 3 seconds.');
+
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch revenue data.');
+  }
+}
 
 export async function fetchRevenue() {
   // Add noStore() here to prevent the response from being cached.
